@@ -1,10 +1,10 @@
-# FluxPDF - Professional PDF Reader & Manager
+# PDFLite - Professional PDF Reader & Manager
 
-FluxPDF is a comprehensive Flutter application for viewing and managing PDF documents on Android devices. It provides an intuitive interface for document organization with features like text selection, copying, and sharing.
+PDFLite is a comprehensive Flutter application for viewing and managing PDF documents on Android devices. It provides an intuitive interface for document organization with features like text selection, copying, and sharing.
 
 ## Project Purpose
 
-FluxPDF aims to deliver a mobile-first PDF experience for viewing and basic management. It enables users to:
+PDFLite aims to deliver a mobile-first PDF experience for viewing and basic management. It enables users to:
 - View and navigate PDFs with smooth performance
 - Select and copy text from documents
 - Organize documents with favorites and tags
