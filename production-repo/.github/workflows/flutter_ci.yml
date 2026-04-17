@@ -1,0 +1,74 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+      
+      - name: Cache Flutter packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Run static analysis
+        run: flutter analyze
+      
+      - name: Run unit tests
+        run: flutter test --no-pub
+      
+      - name: Run widget tests
+        run: flutter test test/widget_test.dart --no-pub || true
+      
+      - name: Build Android APK
+        uses: android-actions/setup-android@v2
+        with:
+          api-version: 34
+          build-tools: 34.0.0
+          
+      - name: Build APK
+        run: flutter build apk --debug
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+        if: always()
+      
+      - name: Build iOS (macOS only)
+        if: runner.os == 'macOS'
+        run: flutter build ios --simulator --no-codesign
+        env:
+          FLUTTER_ROOT: ${{ env.FLUTTER_ROOT }}
+      
+      - name: Upload iOS build
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-simulator-build
+          path: build/ios/iphonesimulator/Runner.app
+        if: always()
